@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://limecloud.github.io/agentcontext/schemas/agentcontext-budget.schema.json",
+  "title": "Agent Context Budget",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "budget_id": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    },
+    "max_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "reserved_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "max_items": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actual_tokens": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actual_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actual_items": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "overflow_strategy": {
+      "type": "string"
+    },
+    "truncation_records": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "window_segments": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "budget_id",
+    "target",
+    "created_at"
+  ]
+}

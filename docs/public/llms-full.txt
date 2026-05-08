@@ -1,0 +1,1437 @@
+# Agent Context full documentation for LLMs
+
+This file concatenates the current English Agent Context documentation. Source URLs point to the public documentation site.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/what-is-agent-context
+
+---
+title: What is Agent Context?
+description: Overview and boundaries for Agent Context.
+---
+
+# What is Agent Context?
+
+Agent Context is the portable contract for the context actually available to an agent at a moment of work. It sits between sources and execution.
+
+Sources can include user messages, system instructions, session history, working memory, durable memory, knowledge packages, document excerpts, file excerpts, artifacts, tool results, browser state, runtime state, policy notes, peer-agent messages, external resources, and computed summaries. Agent Context does not own those sources. It records how they are surfaced, selected, constrained, assembled, injected, compacted, and reported.
+
+## The problem
+
+Agent systems often answer incorrectly because the context story is implicit:
+
+- a memory was available but not selected;
+- a selected item was truncated without a record;
+- a summary replaced original turns but the loss was not tracked;
+- a tool saw different context from the model;
+- a policy redaction changed a snippet but the UI only shows the final answer;
+- a reviewer cannot reproduce which sources entered the prompt.
+
+Agent Context makes those facts explicit.
+
+## Core boundary
+
+| Layer | Owns | Agent Context relationship |
+| --- | --- | --- |
+| Runtime | Accepts, schedules, executes, pauses, resumes, and recovers work. | Context records the input snapshot and injection facts used by runtime work. |
+| UI | Shows messages, previews, controls, citations, and review panels. | Context gives UI explainable surfaces, omissions, and missing-context requests. |
+| Tool | Declares and invokes capabilities. | Context records which context items were visible to or produced by tools. |
+| Policy | Decides permission, redaction, retention, and export constraints. | Context links to policy decisions and records redaction state. |
+| Evidence | Reviews, verifies, replays, and exports trust records. | Context supplies selection, omission, compaction, and injection facts for audit. |
+| Artifact | Owns durable deliverables and their versions. | Context may reference artifact versions or parts as input context. |
+| Knowledge | Owns source-grounded knowledge packages and compiled views. | Context records which knowledge items were selected into a turn. |
+| Skills | Own executable methods and procedural packages. | Context may show skill docs or assets as selected data; it does not execute them. |
+
+## Design principles
+
+1. Preserve native ids from source systems, model APIs, tools, and peer-agent protocols.
+2. Keep context selection separate from storage and retrieval.
+3. Treat injected context as a snapshot, not a vague side effect.
+4. Prefer refs for large, sensitive, or mutable material.
+5. Record omissions and missing context, not only selected context.
+6. Keep policy decisions outside the context standard while preserving policy refs.
+7. Make compaction auditable: source items, replacement summary, losses, and validation.
+8. Support different visibility targets: model, tool, runtime, UI, user, reviewer, and peer agent.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/specification
+
+---
+title: Specification
+description: Latest Agent Context draft specification.
+---
+
+# Specification
+
+Agent Context latest draft is a portable standard for context surfaces, context items, source refs, selection and ranking, budget and window records, assembly and injection, compaction and summaries, missing-context records, policy refs, evidence refs, telemetry refs, and context lifecycle events.
+
+Agent Context owns context semantics. It does not own memory storage, retrieval indexes, prompt templates, model APIs, runtime queues, tool execution, UI rendering, policy decisions, evidence archives, artifact lifecycle, knowledge package authoring, or skill execution.
+
+## Scope
+
+Agent Context standardizes these implementation concerns:
+
+1. Context envelopes with stable identity, scope, lifecycle, actor refs, runtime refs, policy refs, evidence refs, and telemetry refs.
+2. Context surfaces that describe the set of context candidates available before selection.
+3. Context items with kind, content mode, source refs, token estimates, freshness, trust, sensitivity, and redaction state.
+4. Source refs with URI, selectors, digests, authority, provenance links, and native protocol mappings.
+5. Selection and ranking records for candidates, selected items, omitted items, reasons, and scorer signals.
+6. Budget and context-window records for tokens, bytes, items, reserved segments, overflow, and truncation.
+7. Assembly and injection records that show the exact ordered blocks visible to a target.
+8. Compaction and summary records that preserve source coverage, replacement facts, loss notes, and refresh policy.
+9. Missing-context records that make known unknowns actionable.
+10. Event classes for surface, item, selection, budget, assembly, injection, compaction, missing-context, redaction, and export changes.
+
+Agent Context does **not** define a new retrieval engine, vector database, memory store, prompt language, runtime scheduler, UI component library, authorization engine, evidence archive, or artifact format.
+
+## Core objects
+
+| Object | Purpose |
+| --- | --- |
+| `context_envelope` | Portable snapshot for a turn, task, session, tool call, review, or handoff. |
+| `context_surface` | Candidate context available in a scope before selection. |
+| `context_item` | Inline or referenced unit of context. |
+| `context_source_ref` | Origin, selector, digest, authority, and native mapping. |
+| `context_selection` | Candidate, selected, omitted, ranking, and rationale facts. |
+| `context_budget` | Token, byte, item, time, and visibility limits plus actual usage. |
+| `context_window` | Ordered window layout and reserved segments for a target. |
+| `context_assembly` | Ordered context blocks prepared for a target. |
+| `context_injection` | Record of where assembled context became visible. |
+| `context_compaction` | Replacement of larger context with a shorter summary or digest. |
+| `context_summary` | Summary content, coverage, loss notes, validation, and refresh policy. |
+| `missing_context` | Known gaps, blockers, questions, and requested sources. |
+| `context_event` | Lifecycle event envelope for context operations. |
+
+## Context envelope
+
+Every exported `context_envelope` SHOULD include:
+
+| Field | Requirement |
+| --- | --- |
+| `schema_version` | Required Agent Context schema version. |
+| `context_id` | Required stable id for this context snapshot. |
+| `scope` | Required scope: `turn`, `task`, `session`, `tool_invocation`, `review`, `handoff`, or `custom`. |
+| `lifecycle` | Required lifecycle state. |
+| `created_at` | Required timestamp. |
+| `producer` | Recommended producer id and version. |
+| `actor_refs` | Recommended user, agent, model, peer, or service actors. |
+| `runtime_refs` | Recommended session, thread, turn, task, queue, or execution refs. |
+| `surface_refs` | Recommended refs to `context_surface` records. |
+| `item_refs` | Recommended refs to selected or injected context items. |
+| `selection_refs` | Recommended refs to selection records. |
+| `budget_ref` | Recommended ref to the budget/window decision. |
+| `assembly_refs` | Recommended refs to target-specific assemblies. |
+| `injection_refs` | Recommended refs to target-specific injections. |
+| `compaction_refs` | Recommended when summary or compaction affects this context. |
+| `missing_context_refs` | Recommended when context gaps are known. |
+| `policy_refs` | Recommended when permissions, redaction, retention, or export rules apply. |
+| `evidence_refs` | Recommended when the context is reviewed, replayed, exported, or audited. |
+| `telemetry_refs` | Recommended trace/span/log/metric correlation refs. |
+
+## Lifecycle
+
+Context records SHOULD use these lifecycle states:
+
+| State | Meaning |
+| --- | --- |
+| `draft` | Being assembled or not yet final. |
+| `available` | Candidate context exists but has not necessarily been selected. |
+| `selected` | Chosen for a scope before final budget or assembly. |
+| `assembled` | Ordered into a target-specific structure. |
+| `injected` | Made visible to a model, tool, UI, runtime, user, reviewer, or peer agent. |
+| `compacted` | Replaced by summary or digest. |
+| `redacted` | Sensitive portions removed or masked. |
+| `expired` | No longer valid because freshness, retention, or source state changed. |
+| `archived` | Kept only for historical or audit use. |
+
+## Context items
+
+A `context_item` SHOULD include `item_id`, `context_kind`, `title`, `content_mode`, `content`, `content_ref`, `mime_type`, `language`, `source_refs`, `token_estimate`, `byte_size`, `freshness`, `trust_level`, `sensitivity`, `redaction_state`, `visibility`, `priority`, `created_at`, and `metadata`.
+
+`content_mode` SHOULD be one of:
+
+- `inline`
+- `ref`
+- `summary`
+- `embedded_resource`
+- `resource_link`
+- `artifact_ref`
+- `tool_result_ref`
+- `opaque`
+
+Large, mutable, private, or binary content SHOULD be referenced rather than embedded.
+
+## Source refs
+
+A `context_source_ref` SHOULD preserve source identity with `source_id`, `uri`, `source_kind`, `selector`, `digest`, `authority`, `provenance_refs`, `external_mappings`, `license`, `retrieved_at`, `modified_at`, and `metadata`.
+
+Selectors MAY use text quote, text position, byte range, line range, JSON Pointer, CSS selector, XPath, page region, media time range, or custom selector types. Implementations SHOULD keep selectors stable enough for evidence review and replay.
+
+## Selection and ranking
+
+A `context_selection` SHOULD include `selection_id`, `surface_id`, `query`, `intent`, `candidate_item_refs`, `selected_item_refs`, `omitted_item_refs`, `ranking_signals`, `selection_policy`, `budget_ref`, `rationale`, `actor_ref`, `model_ref`, `created_at`, and `metadata`.
+
+Omitted context is first-class. If an item was available but not selected, the selection record SHOULD say whether it was omitted because of budget, low relevance, stale source, policy block, duplicate coverage, unsupported media, privacy risk, or missing permission.
+
+## Budget and window
+
+A `context_budget` SHOULD include `budget_id`, `target`, `max_tokens`, `reserved_tokens`, `max_bytes`, `max_items`, `actual_tokens`, `actual_bytes`, `actual_items`, `overflow_strategy`, `truncation_records`, `window_segments`, and `created_at`.
+
+Initial `overflow_strategy` values:
+
+- `reject`
+- `truncate_tail`
+- `truncate_middle`
+- `summarize_oldest`
+- `summarize_low_priority`
+- `defer_to_retrieval`
+- `ask_for_choice`
+- `policy_block`
+- `custom`
+
+## Assembly and injection
+
+A `context_assembly` SHOULD include `assembly_id`, `target`, `ordered_blocks`, `wrapping_policy`, `separator_policy`, `visibility`, `budget_ref`, `source_item_refs`, `redaction_state`, and `created_at`.
+
+A `context_injection` SHOULD include `injection_id`, `assembly_id`, `target`, `injection_point`, `native_id`, `visibility`, `final_ref`, `hash`, `created_at`, and `metadata`.
+
+Initial `injection_point` values:
+
+- `system_prompt`
+- `developer_prompt`
+- `message_history`
+- `user_message_appendix`
+- `tool_argument`
+- `tool_visible_resource`
+- `runtime_metadata`
+- `ui_panel`
+- `review_export`
+- `peer_agent_message`
+- `artifact_input`
+- `custom`
+
+## Compaction and summaries
+
+A `context_compaction` SHOULD include `compaction_id`, `scope`, `source_item_refs`, `summary_ref`, `method`, `trigger`, `coverage`, `loss_notes`, `validation`, `replacement_policy`, `created_at`, and `metadata`.
+
+Initial `method` values:
+
+- `extractive_summary`
+- `abstractive_summary`
+- `structured_digest`
+- `rolling_summary`
+- `semantic_memory_update`
+- `human_curated_summary`
+- `provider_context_editing`
+- `custom`
+
+Compaction SHOULD never silently erase source context. It should record what was replaced, why, how to refresh it, and what uncertainty or losses were introduced.
+
+## Missing context
+
+A `missing_context` record SHOULD include `missing_id`, `scope`, `question`, `needed_for`, `severity`, `candidate_sources`, `blocked_actions`, `requested_from`, `status`, `resolution_refs`, `created_at`, and `metadata`.
+
+Initial `severity` values:
+
+- `info`
+- `low`
+- `medium`
+- `high`
+- `blocking`
+
+A compatible UI, runtime, or peer-agent bridge MAY turn `missing_context` into a user question, retrieval request, tool invocation, policy request, or peer-agent task.
+
+## Policy and redaction
+
+Agent Context records policy facts; it does not make policy decisions. Context records SHOULD link to policy decisions through `policy_refs` and record `sensitivity`, `retention_hint`, `redaction_state`, `redaction_method`, and `redacted_by` where relevant.
+
+Initial `redaction_state` values:
+
+- `none`
+- `masked`
+- `removed`
+- `summarized`
+- `encrypted_ref`
+- `policy_blocked`
+- `unknown`
+
+## External mappings
+
+Agent Context SHOULD preserve native ids instead of replacing them.
+
+| Native source | Mapping fields |
+| --- | --- |
+| MCP | `server_id`, `mcp_session_id`, `resource_uri`, `resource_template`, `prompt_name`, `root_uri`, `jsonrpc_request_id`. |
+| A2A | `agent_card_url`, `task_id`, `context_id`, `message_id`, `part_id`, `artifact_id`, `skill_id`. |
+| OpenTelemetry | `trace_id`, `span_id`, `event_name`, `conversation_id`, `system`, `operation_name`, `token_usage`. |
+| Model API | `response_id`, `message_id`, `prompt_cache_key`, `tool_call_id`, `input_tokens`, `cached_input_tokens`. |
+| Web Annotation | `target`, `selector_type`, `start`, `end`, `exact`, `prefix`, `suffix`. |
+| W3C PROV | `entity`, `activity`, `agent`, `wasDerivedFrom`, `wasAttributedTo`, `wasGeneratedBy`. |
+| CloudEvents | `id`, `source`, `type`, `subject`, `time`, `datacontenttype`. |
+| JSON Schema | `$id`, `$schema`, `$ref`, `type`, `properties`, `required`, `additionalProperties`. |
+
+## Event classes
+
+Compatible implementations SHOULD emit or export these event classes:
+
+- `context.surface.created`
+- `context.surface.updated`
+- `context.item.added`
+- `context.item.updated`
+- `context.item.removed`
+- `context.selection.started`
+- `context.selection.completed`
+- `context.budget.applied`
+- `context.assembly.created`
+- `context.injection.applied`
+- `context.compaction.started`
+- `context.compaction.completed`
+- `context.summary.created`
+- `context.missing.detected`
+- `context.missing.requested`
+- `context.missing.resolved`
+- `context.redaction.applied`
+- `context.exported`
+
+## Compatibility requirements
+
+A compatible Agent Context implementation SHOULD:
+
+1. Export context envelopes for important turns, tasks, tool calls, and handoffs.
+2. Preserve native source ids and protocol ids.
+3. Record both selected and omitted context where selection is non-trivial.
+4. Record token or size budgets whenever context is constrained.
+5. Record assembly and injection targets separately.
+6. Record compaction sources and summary replacement facts.
+7. Record missing context when the agent knows an input gap affects quality or safety.
+8. Link policy, evidence, artifact, tool, runtime, UI, knowledge, and telemetry facts by refs rather than embedding entire foreign objects.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/concepts/context-model
+
+---
+title: Context model
+description: Object model and lifecycle for Agent Context.
+---
+
+# Context Model
+
+Agent Context uses a simple lifecycle:
+
+```text
+sources -> context_surface -> context_selection -> context_budget -> context_assembly -> context_injection -> context_evidence
+                              |                     |
+                              v                     v
+                         missing_context       context_compaction
+```
+
+## Objects
+
+| Object | Purpose |
+| --- | --- |
+| `context_envelope` | One portable snapshot for a turn, task, session, tool call, UI review, or peer-agent handoff. |
+| `context_surface` | The context that was available before selection. |
+| `context_item` | A unit of context, either inline or by reference. |
+| `context_source_ref` | Origin, selector, digest, authority, and native id mapping for an item. |
+| `context_selection` | Candidate, selected, omitted, ranking, and rationale records. |
+| `context_budget` | Token, byte, item, time, and visibility limits. |
+| `context_window` | Ordered segments and reserved space for the final context window. |
+| `context_assembly` | Ordered blocks assembled for a target. |
+| `context_injection` | Where context became visible: system prompt, message history, tool argument, tool-visible resource, UI panel, runtime metadata, or peer-agent message. |
+| `context_compaction` | Replacement of original context with a shorter summary or structured digest. |
+| `context_summary` | Summary content plus source coverage, loss notes, and refresh policy. |
+| `missing_context` | Known missing inputs, blockers, questions, and requested sources. |
+| `context_event` | Lifecycle event for surfaces, selections, budgets, injections, compactions, redactions, and exports. |
+
+## Context kinds
+
+Initial `context_kind` values:
+
+- `user_message`
+- `system_prompt`
+- `developer_instruction`
+- `session_history`
+- `thread_summary`
+- `working_memory`
+- `durable_memory`
+- `knowledge_pack_item`
+- `document_excerpt`
+- `file_excerpt`
+- `artifact_ref`
+- `tool_result`
+- `browser_state`
+- `runtime_state`
+- `team_memory`
+- `policy_note`
+- `external_resource`
+- `manual_note`
+- `computed_summary`
+- `peer_agent_message`
+- `retrieval_result`
+- `custom`
+
+## Visibility targets
+
+Context may be visible to one or more targets:
+
+- `model`
+- `tool`
+- `runtime`
+- `ui`
+- `user`
+- `reviewer`
+- `peer_agent`
+- `evidence_export`
+
+A compatible implementation should not assume that context injected into one target is visible to every target.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/context-envelope
+
+---
+title: Context envelope
+description: Agent Context context envelope contract.
+---
+
+# Context envelope
+
+A `context_envelope` is the top-level snapshot for one context boundary. It answers: which context records belong to this turn, task, tool invocation, review, or handoff?
+
+## Required fields
+
+| Field | Purpose |
+| --- | --- |
+| `schema_version` | Agent Context schema version. |
+| `context_id` | Stable snapshot id. |
+| `scope` | Boundary such as `turn`, `task`, `session`, `tool_invocation`, `review`, or `handoff`. |
+| `lifecycle` | Current lifecycle state. |
+| `created_at` | Snapshot timestamp. |
+
+## Recommended refs
+
+Use refs rather than embedding complete records when envelopes travel across systems: `surface_refs`, `item_refs`, `selection_refs`, `budget_ref`, `assembly_refs`, `injection_refs`, `compaction_refs`, `missing_context_refs`, `policy_refs`, `evidence_refs`, `artifact_refs`, `tool_refs`, `runtime_refs`, and `telemetry_refs`.
+
+## Fixed rule
+
+The envelope is a snapshot, not a mutable memory store. If context changes, create a new event and, when needed, a new envelope revision.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/context-surface
+
+---
+title: Context surface
+description: Agent Context context surface contract.
+---
+
+# Context surface
+
+A `context_surface` describes what context was available before a selection decision. It is the context equivalent of a tool surface: small enough to reason about, large enough to explain omissions.
+
+## Fields
+
+A surface SHOULD include `surface_id`, `scope`, `producer`, `available_source_refs`, `available_item_refs`, `capability_refs`, `policy_refs`, `visibility`, `created_at`, `expires_at`, and `metadata`.
+
+## Surface kinds
+
+- `turn_surface`
+- `task_surface`
+- `session_surface`
+- `tool_surface`
+- `review_surface`
+- `handoff_surface`
+- `custom`
+
+## Fixed rule
+
+Do not expose the whole world as a surface. Large catalogs should be represented through discovery, search, retrieval, or deferred source refs.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/context-items
+
+---
+title: Context items
+description: Agent Context context items contract.
+---
+
+# Context items
+
+A `context_item` is one unit of usable context. It can be text, structured data, a resource link, an artifact part, a tool result ref, a browser observation, a summary, or opaque referenced content.
+
+## Required fields
+
+| Field | Purpose |
+| --- | --- |
+| `item_id` | Stable item id. |
+| `context_kind` | Semantic kind of the item. |
+| `content_mode` | Inline, ref, summary, embedded resource, resource link, artifact ref, tool result ref, or opaque. |
+| `visibility` | Targets allowed to see the item. |
+
+## Recommended fields
+
+Add `title`, `mime_type`, `language`, `source_refs`, `token_estimate`, `byte_size`, `freshness`, `trust_level`, `priority`, `sensitivity`, `redaction_state`, and `metadata`.
+
+## Fixed rule
+
+An item is context, not authority by itself. Authority comes from its source refs, provenance, freshness, and policy/evidence links.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/source-refs
+
+---
+title: Source refs
+description: Agent Context source refs contract.
+---
+
+# Source refs
+
+A `context_source_ref` preserves where a context item came from and how to locate or verify it again.
+
+## Selector types
+
+Initial selector types: `text_quote`, `text_position`, `byte_range`, `line_range`, `json_pointer`, `css_selector`, `xpath`, `page_region`, `media_time_range`, `artifact_part`, `message_part`, and `custom`.
+
+## Recommended fields
+
+Use `source_id`, `uri`, `source_kind`, `selector`, `digest`, `authority`, `provenance_refs`, `external_mappings`, `license`, `retrieved_at`, and `modified_at`.
+
+## Fixed rule
+
+A source ref should remain useful after context is summarized, redacted, exported, or reviewed. If the original source cannot be shared, preserve a digest and a redacted locator.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/selection-and-ranking
+
+---
+title: Selection and ranking
+description: Agent Context selection and ranking contract.
+---
+
+# Selection and ranking
+
+A `context_selection` explains how candidate context became selected or omitted context.
+
+## Ranking signals
+
+Common signals include `relevance`, `recency`, `authority`, `user_pin`, `policy_allow`, `freshness`, `coverage`, `dedupe_score`, `token_cost`, `sensitivity`, `tool_visibility`, and `runtime_need`.
+
+## Omission reasons
+
+Initial omission reasons: `budget_limit`, `low_relevance`, `duplicate`, `stale`, `policy_blocked`, `permission_missing`, `unsupported_media`, `too_large`, `sensitive`, `superseded_by_summary`, `not_visible_to_target`, and `custom`.
+
+## Fixed rule
+
+If an omitted item would reasonably change the answer, the selection should either record a high-impact omission or create a `missing_context` record.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/budget-and-window
+
+---
+title: Budget and window
+description: Agent Context budget and window contract.
+---
+
+# Budget and window
+
+A `context_budget` records the constraints applied to a target context window.
+
+## Budget dimensions
+
+Use token budgets when models are the target, byte budgets when resources or exports are the target, item budgets when UI or tool surfaces are the target, and time budgets when retrieval or peer-agent context gathering is bounded.
+
+## Window segments
+
+A window segment SHOULD include `segment_id`, `role`, `target`, `reserved_tokens`, `actual_tokens`, `item_refs`, `order`, and `truncation_records`.
+
+## Fixed rule
+
+Budget decisions should be reproducible. Record both the limit and the measured usage estimate available at the time.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/assembly-and-injection
+
+---
+title: Assembly and injection
+description: Agent Context assembly and injection contract.
+---
+
+# Assembly and injection
+
+Assembly orders context. Injection makes it visible.
+
+## Assembly block
+
+An assembly block SHOULD include `block_id`, `item_refs`, `content_ref`, `wrapper`, `position`, `visibility`, `token_estimate`, `hash`, and `redaction_state`.
+
+## Injection target
+
+Targets include model prompts, message history, tool arguments, tool-visible resources, runtime metadata, UI panels, review exports, peer-agent messages, and artifact inputs.
+
+## Fixed rule
+
+Never infer injection from selection alone. A selected item may be omitted later, compacted, redacted, deferred, or visible only to a non-model target.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/compaction-and-summaries
+
+---
+title: Compaction and summaries
+description: Agent Context compaction and summaries contract.
+---
+
+# Compaction and summaries
+
+A `context_compaction` records when original context is replaced by a shorter summary or structured digest.
+
+## Summary contract
+
+A `context_summary` SHOULD include `summary_id`, `summary_kind`, `content`, `source_item_refs`, `coverage`, `loss_notes`, `open_questions`, `freshness`, `validation`, and `refresh_policy`.
+
+## Triggers
+
+Initial triggers: `manual`, `token_pressure`, `session_length`, `task_boundary`, `handoff`, `retention`, `privacy`, `provider_context_editing`, and `custom`.
+
+## Fixed rule
+
+A compaction is safe only if reviewers can tell what it replaced, what it preserved, what it lost, and when it should be refreshed.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/missing-context
+
+---
+title: Missing context
+description: Agent Context missing context contract.
+---
+
+# Missing context
+
+`missing_context` turns known gaps into portable facts.
+
+## Use cases
+
+- The user asked about a file that is not loaded.
+- A source exists but permission is missing.
+- The selected context is stale.
+- A tool result references an artifact that was not available to the model.
+- A peer agent needs a document excerpt before continuing.
+
+## Status values
+
+Initial status values: `open`, `requested`, `waiting`, `resolved`, `declined`, `blocked`, and `expired`.
+
+## Fixed rule
+
+Do not hide uncertainty inside a final answer. If missing context materially affects work, record it and surface it to the system that can resolve it.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/policy-and-redaction
+
+---
+title: Policy and redaction
+description: Agent Context policy and redaction contract.
+---
+
+# Policy and redaction
+
+Agent Context records policy-related facts but does not decide policy.
+
+## Policy refs
+
+A context item, selection, assembly, injection, compaction, or export MAY link to `policy_refs`. These refs can point to approvals, denials, retention decisions, data access grants, redaction decisions, or waiver records.
+
+## Redaction records
+
+A redaction record SHOULD include `redaction_state`, `redaction_method`, `redacted_fields`, `policy_refs`, `actor_ref`, `created_at`, and `replacement_ref` when replacement content exists.
+
+## Fixed rule
+
+Do not treat redacted context as the same context. Preserve a relationship to the original by ref when policy allows; otherwise preserve a digest and redaction reason.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/contracts/interoperability
+
+---
+title: Interoperability
+description: Agent Context interoperability contract.
+---
+
+# Interoperability
+
+Agent Context is a bridge standard. It should preserve native ids and map to adjacent standards by refs.
+
+## MCP
+
+Map MCP resources, resource templates, roots, prompts, resource links, annotations, and JSON-RPC ids into source refs, context items, and external mappings.
+
+## A2A
+
+Map A2A `contextId`, task ids, messages, parts, artifacts, and agent skills into peer-agent source refs and handoff envelopes.
+
+## OpenTelemetry
+
+Map trace ids, span ids, GenAI operation names, prompt events, token usage, and conversation/session attributes into telemetry refs.
+
+## W3C PROV and Web Annotation
+
+Use PROV-style entity/activity/agent relationships for derivation and attribution. Use Web Annotation-style selectors for precise source anchoring.
+
+## Fixed rule
+
+Interoperability means preserving foreign identity. Do not collapse native protocols into Agent Context-only ids.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/authoring/quickstart
+
+---
+title: Implementation quickstart
+description: Quickstart for implementing Agent Context.
+---
+
+# Implementation Quickstart
+
+1. Inventory context sources and preserve their native ids.
+2. Create `context_surface` records for each turn, task, tool call, review, or handoff boundary.
+3. Normalize candidate units into `context_item` records with source refs, visibility, sensitivity, and token estimates.
+4. Run selection and produce `context_selection` records for selected and omitted items.
+5. Apply `context_budget` and `context_window` records before prompt or tool assembly.
+6. Produce `context_assembly` records per target instead of assuming one prompt equals all context.
+7. Produce `context_injection` records when assembled blocks become visible.
+8. Record compaction sources, summaries, omissions, and missing-context requests.
+9. Link policy, evidence, artifact, tool, runtime, UI, knowledge, and telemetry facts by refs.
+10. Export `context_event` records so reviewers can replay how context changed.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/authoring/acceptance-scenarios
+
+---
+title: Acceptance scenarios
+description: Minimal scenarios for validating an Agent Context implementation.
+---
+
+# Acceptance Scenarios
+
+## Turn snapshot
+
+Given a user turn with session history, working memory, a knowledge snippet, and a tool result, the implementation exports a `context_envelope` with a surface, selected items, a budget, an assembly, and an injection record.
+
+## Omitted context
+
+Given five candidate snippets and a three-item budget, the implementation records the two omitted snippets and their omission reasons.
+
+## Compaction
+
+Given a long session replaced by a summary, the implementation records source item refs, summary content or summary ref, coverage, loss notes, and replacement policy.
+
+## Tool-visible context
+
+Given a tool that receives a resource ref not shown to the model, the implementation records a tool-targeted injection separate from model prompt injection.
+
+## Missing context
+
+Given a task blocked by a missing file, the implementation creates a `missing_context` record with severity, requested source, blocked action, and resolution status.
+
+## Redaction
+
+Given a selected item with private content, the implementation records redaction state, redaction method, policy refs, and a redacted assembly block.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/examples/turn-context-snapshot
+
+---
+title: Turn context snapshot
+description: Agent Context example for turn context snapshot.
+---
+
+# Turn context snapshot
+
+```json
+{
+  "schema_version": "0.1.0",
+  "context_id": "ctx_turn_01HZ",
+  "scope": "turn",
+  "lifecycle": "injected",
+  "runtime_refs": [{ "kind": "turn", "id": "turn_42" }],
+  "surface_refs": ["surface_turn_42"],
+  "item_refs": ["item_user_1", "item_history_summary", "item_policy_note"],
+  "selection_refs": ["selection_turn_42"],
+  "budget_ref": "budget_turn_42",
+  "assembly_refs": ["assembly_model_42"],
+  "injection_refs": ["inject_system_prompt_42"],
+  "created_at": "2026-05-08T00:00:00Z"
+}
+```
+
+This envelope does not embed the whole prompt. It points to the records that explain how prompt context was selected and injected.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/examples/memory-prefetch
+
+---
+title: Memory prefetch
+description: Agent Context example for memory prefetch.
+---
+
+# Memory prefetch
+
+```json
+{
+  "selection_id": "selection_memory_prefetch_7",
+  "surface_id": "surface_turn_7",
+  "query": "Summarize the launch plan and continue writing.",
+  "selected_item_refs": ["wm_progress", "durable_brand_voice", "latest_compaction"],
+  "omitted_item_refs": [
+    { "item_ref": "old_task_log", "reason": "superseded_by_summary" },
+    { "item_ref": "unrelated_preference", "reason": "low_relevance" }
+  ],
+  "ranking_signals": {
+    "wm_progress": { "relevance": 0.92, "recency": 0.88 },
+    "durable_brand_voice": { "relevance": 0.76, "authority": 0.81 }
+  },
+  "created_at": "2026-05-08T00:00:00Z"
+}
+```
+
+Memory prefetch is a selection fact. It is not the memory store itself.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/examples/knowledge-selection
+
+---
+title: Knowledge selection
+description: Agent Context example for knowledge selection.
+---
+
+# Knowledge selection
+
+```json
+{
+  "item_id": "item_knowledge_pricing_claim",
+  "context_kind": "knowledge_pack_item",
+  "title": "Approved pricing claim",
+  "content_mode": "ref",
+  "content_ref": "knowledge://acme-product/compiled/pricing#claim-12",
+  "source_refs": [
+    {
+      "source_id": "source_pricing_doc",
+      "uri": "knowledge://acme-product/documents/pricing.md",
+      "selector": { "type": "text_position", "start": 1204, "end": 1388 },
+      "digest": "sha256:example"
+    }
+  ],
+  "visibility": ["model", "reviewer"],
+  "trust_level": "official",
+  "token_estimate": 78
+}
+```
+
+Agent Knowledge owns the knowledge artifact. Agent Context records the selected knowledge item and source anchor for this turn.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/examples/context-compaction
+
+---
+title: Context compaction
+description: Agent Context example for context compaction.
+---
+
+# Context compaction
+
+```json
+{
+  "compaction_id": "compact_session_12",
+  "scope": "session",
+  "source_item_refs": ["turn_1", "turn_2", "turn_3", "turn_4"],
+  "summary_ref": "summary_session_12",
+  "method": "rolling_summary",
+  "trigger": "token_pressure",
+  "coverage": { "items_covered": 4, "estimated_tokens_before": 12800, "estimated_tokens_after": 640 },
+  "loss_notes": ["Exact wording of early brainstorming omitted", "Final decisions preserved"],
+  "validation": { "status": "reviewed", "reviewer": "agent" },
+  "replacement_policy": "summary_replaces_source_until_review_requested",
+  "created_at": "2026-05-08T00:00:00Z"
+}
+```
+
+The compaction record makes a shortened context window auditable.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/examples/missing-context-request
+
+---
+title: Missing context request
+description: Agent Context example for missing context request.
+---
+
+# Missing context request
+
+```json
+{
+  "missing_id": "missing_customer_pdf",
+  "scope": "turn",
+  "question": "The task references the customer's signed PDF, but no PDF or extracted text is available.",
+  "needed_for": "verify contractual constraints before drafting the response",
+  "severity": "blocking",
+  "candidate_sources": [
+    { "kind": "file", "hint": "customer agreement PDF" },
+    { "kind": "artifact", "hint": "latest contract extraction" }
+  ],
+  "blocked_actions": ["final_answer", "artifact_export"],
+  "requested_from": "user",
+  "status": "requested",
+  "created_at": "2026-05-08T00:00:00Z"
+}
+```
+
+Missing context can drive a UI question, retrieval action, tool request, or peer-agent handoff.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/reference/glossary
+
+---
+title: Glossary
+description: Agent Context terminology.
+---
+
+# Glossary
+
+| Term | Meaning |
+| --- | --- |
+| Context | Information available to an agent, model, tool, UI, runtime, reviewer, user, or peer agent at a point of work. |
+| Context surface | Candidate context available before selection. |
+| Context item | One inline or referenced unit of context. |
+| Source ref | Origin and locator for a context item. |
+| Selection | Decision record for candidates, selected items, and omitted items. |
+| Budget | Token, byte, item, time, or visibility constraint. |
+| Window | Ordered layout for target-visible context. |
+| Assembly | Ordered blocks prepared for a target. |
+| Injection | Event that makes assembled context visible to a target. |
+| Compaction | Replacement of larger context with a summary or digest. |
+| Missing context | Known gap that affects correctness, safety, or completion. |
+| Redaction | Masking, removing, summarizing, or replacing sensitive context. |
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/reference/agent-ecosystem
+
+---
+title: Agent standards ecosystem
+description: Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, Agent Tool, and Agent Context.
+---
+
+# Agent Standards Ecosystem
+
+The Agent standards ecosystem splits agent products into portable contracts. Each standard owns one layer of meaning and links to the others through stable refs instead of swallowing their responsibilities.
+
+This page is the public friend-link map for the current standards.
+
+## Where Agent Context fits
+
+Agent Context owns portable context facts: what context was available, selected, omitted, budgeted, assembled, injected, compacted, summarized, missing, redacted, and linked to evidence.
+
+Context explains what an agent could see at a point of work and how that visibility was constructed.
+
+## Current standards
+
+| Standard | Role | Site | LLM context | Repository |
+| --- | --- | --- | --- | --- |
+| Agent Knowledge | Source-grounded knowledge packs for agents. | [site](https://limecloud.github.io/agentknowledge/) | [llms-full](https://limecloud.github.io/agentknowledge/llms-full.txt) | [repo](https://github.com/limecloud/agentknowledge) |
+| Agent UI | Interaction surfaces for agent products. | [site](https://limecloud.github.io/agentui/) | [llms-full](https://limecloud.github.io/agentui/llms-full.txt) | [repo](https://github.com/limecloud/agentui) |
+| Agent Runtime | Execution facts, controls, tasks, tools, and recovery. | [site](https://limecloud.github.io/agentruntime/) | [llms-full](https://limecloud.github.io/agentruntime/llms-full.txt) | [repo](https://github.com/limecloud/agentruntime) |
+| Agent Evidence | Evidence, provenance, verification, review, replay, and export. | [site](https://limecloud.github.io/agentevidence/) | [llms-full](https://limecloud.github.io/agentevidence/llms-full.txt) | [repo](https://github.com/limecloud/agentevidence) |
+| Agent Policy | Risk, permission, approval, retention, waiver, access, and policy decision facts. | [site](https://limecloud.github.io/agentpolicy/) | [llms-full](https://limecloud.github.io/agentpolicy/llms-full.txt) | [repo](https://github.com/limecloud/agentpolicy) |
+| Agent Artifact | Durable deliverables, versions, parts, previews, exports, source links, and handoff packages. | [site](https://limecloud.github.io/agentartifact/) | [llms-full](https://limecloud.github.io/agentartifact/llms-full.txt) | [repo](https://github.com/limecloud/agentartifact) |
+| Agent Tool | Tool declarations, surfaces, invocations, progress, results, permissions, and audit refs. | [site](https://limecloud.github.io/agenttool/) | [llms-full](https://limecloud.github.io/agenttool/llms-full.txt) | [repo](https://github.com/limecloud/agenttool) |
+| Agent Context | Context surfaces, items, source refs, selection, budgets, assembly, injection, compaction, and missing-context facts. | [site](https://limecloud.github.io/agentcontext/) | [llms-full](https://limecloud.github.io/agentcontext/llms-full.txt) | [repo](https://github.com/limecloud/agentcontext) |
+
+## Boundary rule
+
+```text
+Agent Knowledge -> what durable source-grounded context an agent can use
+Agent Runtime   -> how agent work is accepted, executed, controlled, and resumed
+Agent UI        -> how agent work is projected into user-visible surfaces
+Agent Evidence  -> why an agent outcome can be trusted, reviewed, replayed, and exported
+Agent Policy    -> whether an agent action may proceed and under which constraints
+Agent Artifact  -> what durable deliverable the agent produced and how it changes
+Agent Tool      -> what capability was exposed, invoked, progressed, and returned
+Agent Context   -> what context was available, selected, assembled, compacted, missing, and injected
+```
+
+No standard should become the whole stack. A compatible implementation should preserve native ids and link across standards with refs.
+
+## Future standard candidates
+
+| Candidate | Why it may become a standard |
+| --- | --- |
+| Agent Evaluation | Acceptance scenarios, rubrics, eval runs, quality gates, and evidence-backed benchmark records. |
+| Agent Workflow | Portable multi-step work plans, scene launches, background jobs, and handoff states. |
+| Agent Model Routing | Task profiles, model candidates, routing decisions, fallback, quota, and cost records. |
+| Agent Channel | Remote runtime, A2A peers, webhooks, deep links, browser sessions, and desktop bridges. |
+
+These candidates should remain design notes until they can be specified without relying on one product implementation.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/reference/json-schemas
+
+---
+title: JSON Schemas
+description: Public JSON Schemas for Agent Context v0.1.0.
+---
+
+# JSON Schemas
+
+Agent Context v0.1.0 publishes draft JSON Schemas for implementors. The schemas are intentionally small and extensible; they define portable fields without forbidding native protocol metadata.
+
+| Schema | URL |
+| --- | --- |
+| Context envelope | [/schemas/agentcontext-context-envelope.schema.json](/schemas/agentcontext-context-envelope.schema.json) |
+| Context surface | [/schemas/agentcontext-context-surface.schema.json](/schemas/agentcontext-context-surface.schema.json) |
+| Context item | [/schemas/agentcontext-context-item.schema.json](/schemas/agentcontext-context-item.schema.json) |
+| Source ref | [/schemas/agentcontext-source-ref.schema.json](/schemas/agentcontext-source-ref.schema.json) |
+| Selection | [/schemas/agentcontext-selection.schema.json](/schemas/agentcontext-selection.schema.json) |
+| Budget | [/schemas/agentcontext-budget.schema.json](/schemas/agentcontext-budget.schema.json) |
+| Assembly | [/schemas/agentcontext-assembly.schema.json](/schemas/agentcontext-assembly.schema.json) |
+| Compaction | [/schemas/agentcontext-compaction.schema.json](/schemas/agentcontext-compaction.schema.json) |
+| Missing context | [/schemas/agentcontext-missing-context.schema.json](/schemas/agentcontext-missing-context.schema.json) |
+| Event | [/schemas/agentcontext-event.schema.json](/schemas/agentcontext-event.schema.json) |
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/reference/ecosystem-boundaries
+
+---
+title: Ecosystem boundaries
+description: Boundaries between Agent Context and adjacent standards.
+---
+
+# Ecosystem Boundaries
+
+## Agent Context vs Agent Runtime
+
+Runtime owns execution: accepting work, scheduling, queueing, streaming, pausing, resuming, recovery, and control. Context owns the input and visibility facts that explain what context runtime work used.
+
+## Agent Context vs Agent Knowledge
+
+Knowledge owns durable source-grounded knowledge artifacts. Context owns per-turn or per-task selection and injection of knowledge items.
+
+## Agent Context vs Agent Tool
+
+Tool owns capabilities and invocation lifecycle. Context owns what information was visible to a tool, what tool results became context, and how those results were selected or omitted.
+
+## Agent Context vs Agent Policy
+
+Policy owns allow/deny/approve/redact/retain decisions. Context owns the redaction state and policy refs attached to items, selections, assemblies, injections, compactions, and exports.
+
+## Agent Context vs Agent Evidence
+
+Evidence owns review, verification, replay, and export. Context supplies audit facts: source refs, selection, omission, compaction, injection, and missing context.
+
+## Agent Context vs Agent Artifact
+
+Artifact owns durable deliverables and their versions. Context may reference artifact versions, parts, previews, or diffs as input context.
+
+## Agent Context vs Agent UI
+
+UI owns user-visible surfaces and controls. Context gives UI explainable context records, missing-context prompts, and reviewable context traces.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/reference/research-sources
+
+---
+title: Research sources
+description: External references used by the Agent Context draft.
+---
+
+# Research Sources
+
+Agent Context v0.1.0 uses established context, resource, eventing, telemetry, provenance, annotation, and validation references. These references inform the shape of the standard; they do not transfer ownership of Agent Context semantics.
+
+| Source | What Agent Context takes from it |
+| --- | --- |
+| [Model Context Protocol resources specification](https://modelcontextprotocol.io/specification/2025-11-25/server/resources) | Resource discovery, resource URIs, resource templates, resource links, annotations, and read/list boundaries for context sources. |
+| [Model Context Protocol roots specification](https://modelcontextprotocol.io/specification/2025-11-25/client/roots) | Root boundaries for filesystem and workspace context. |
+| [Model Context Protocol prompts specification](https://modelcontextprotocol.io/specification/2025-11-25/server/prompts) | Prompt arguments, reusable prompt surfaces, and context-producing prompt templates. |
+| [Agent2Agent Protocol](https://a2a-protocol.org/latest/specification/) | Peer-agent task context ids, messages, parts, artifacts, agent cards, and skills as native handoff mappings. |
+| [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/) | Trace/span correlation, operation names, prompt events, token usage, and conversation/session telemetry refs. |
+| [W3C PROV Data Model](https://www.w3.org/TR/prov-dm/) | Entity, activity, agent, derivation, attribution, and generation concepts for context provenance. |
+| [W3C Web Annotation Data Model](https://www.w3.org/TR/annotation-model/) | Targets and selectors for precise source anchoring, including text position and text quote selectors. |
+| [CloudEvents specification](https://github.com/cloudevents/spec/blob/main/cloudevents/spec.md) | Portable event envelope fields such as `id`, `source`, `specversion`, `type`, `subject`, `time`, and content metadata. |
+| [JSON Schema 2020-12](https://json-schema.org/draft/2020-12/json-schema-core) | Structural schema vocabulary and validation vocabulary for public schemas. |
+| [Agent Skills](https://agentskills.io/) | AI-friendly authoring style, progressive disclosure, and package-versus-runtime boundary discipline. |
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/reference/source-analysis
+
+---
+title: Source analysis
+description: Analysis distilled from agent context, memory, prompt assembly, tool, and runtime systems.
+---
+
+# Source Analysis
+
+Agent Context exists because modern agent systems do not have a single context source. A turn can combine session history, working memory, durable memory, knowledge snippets, artifacts, tool results, browser observations, runtime metadata, policy notes, and peer-agent messages.
+
+## What existing standards already solve
+
+MCP defines resources, prompts, roots, tools, and annotations. A2A defines peer-agent tasks, messages, artifacts, and context ids. OpenTelemetry defines trace and token telemetry. W3C PROV defines provenance relationships. Web Annotation defines selectors. CloudEvents defines portable events. JSON Schema defines validation.
+
+## What agent products add
+
+Agent products assemble all of those into a model or tool context window under budget pressure. They must decide what to include, omit, summarize, redact, and request from a user or peer. Native protocols do not all describe selection, omission, compaction, target-specific visibility, and missing-context facts the same way.
+
+## Design conclusions
+
+1. Preserve source identity rather than copying all content into prompts.
+2. Separate available context, selected context, assembled context, and injected context.
+3. Make omissions and missing context explicit.
+4. Treat model-visible and tool-visible context as different targets.
+5. Record budget pressure and truncation decisions.
+6. Make compaction auditable through source refs, summary refs, coverage, and loss notes.
+7. Link to policy and evidence rather than embedding their full models.
+8. Keep context portable even when native systems use different prompt, resource, or memory mechanics.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.0/overview
+
+---
+title: v0.1.0 overview
+description: Agent Context v0.1.0 release overview.
+---
+
+# Agent Context v0.1.0
+
+Agent Context v0.1.0 establishes the first public draft for portable context facts in agent systems.
+
+## Highlights
+
+- Defines context envelopes, surfaces, items, source refs, selection, budgets, windows, assembly, injection, compaction, summaries, missing context, redaction, and events.
+- Publishes JSON Schemas for the core objects.
+- Adds examples for turn snapshots, memory prefetch, knowledge selection, context compaction, and missing-context requests.
+- Adds LLM-friendly entrypoints through `llms.txt`, `llms-full.txt`, `llm.txt`, and `llm-full.txt`.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.0/specification
+
+---
+title: Specification
+description: Latest Agent Context draft specification.
+---
+
+# Specification
+
+Agent Context latest draft is a portable standard for context surfaces, context items, source refs, selection and ranking, budget and window records, assembly and injection, compaction and summaries, missing-context records, policy refs, evidence refs, telemetry refs, and context lifecycle events.
+
+Agent Context owns context semantics. It does not own memory storage, retrieval indexes, prompt templates, model APIs, runtime queues, tool execution, UI rendering, policy decisions, evidence archives, artifact lifecycle, knowledge package authoring, or skill execution.
+
+## Scope
+
+Agent Context standardizes these implementation concerns:
+
+1. Context envelopes with stable identity, scope, lifecycle, actor refs, runtime refs, policy refs, evidence refs, and telemetry refs.
+2. Context surfaces that describe the set of context candidates available before selection.
+3. Context items with kind, content mode, source refs, token estimates, freshness, trust, sensitivity, and redaction state.
+4. Source refs with URI, selectors, digests, authority, provenance links, and native protocol mappings.
+5. Selection and ranking records for candidates, selected items, omitted items, reasons, and scorer signals.
+6. Budget and context-window records for tokens, bytes, items, reserved segments, overflow, and truncation.
+7. Assembly and injection records that show the exact ordered blocks visible to a target.
+8. Compaction and summary records that preserve source coverage, replacement facts, loss notes, and refresh policy.
+9. Missing-context records that make known unknowns actionable.
+10. Event classes for surface, item, selection, budget, assembly, injection, compaction, missing-context, redaction, and export changes.
+
+Agent Context does **not** define a new retrieval engine, vector database, memory store, prompt language, runtime scheduler, UI component library, authorization engine, evidence archive, or artifact format.
+
+## Core objects
+
+| Object | Purpose |
+| --- | --- |
+| `context_envelope` | Portable snapshot for a turn, task, session, tool call, review, or handoff. |
+| `context_surface` | Candidate context available in a scope before selection. |
+| `context_item` | Inline or referenced unit of context. |
+| `context_source_ref` | Origin, selector, digest, authority, and native mapping. |
+| `context_selection` | Candidate, selected, omitted, ranking, and rationale facts. |
+| `context_budget` | Token, byte, item, time, and visibility limits plus actual usage. |
+| `context_window` | Ordered window layout and reserved segments for a target. |
+| `context_assembly` | Ordered context blocks prepared for a target. |
+| `context_injection` | Record of where assembled context became visible. |
+| `context_compaction` | Replacement of larger context with a shorter summary or digest. |
+| `context_summary` | Summary content, coverage, loss notes, validation, and refresh policy. |
+| `missing_context` | Known gaps, blockers, questions, and requested sources. |
+| `context_event` | Lifecycle event envelope for context operations. |
+
+## Context envelope
+
+Every exported `context_envelope` SHOULD include:
+
+| Field | Requirement |
+| --- | --- |
+| `schema_version` | Required Agent Context schema version. |
+| `context_id` | Required stable id for this context snapshot. |
+| `scope` | Required scope: `turn`, `task`, `session`, `tool_invocation`, `review`, `handoff`, or `custom`. |
+| `lifecycle` | Required lifecycle state. |
+| `created_at` | Required timestamp. |
+| `producer` | Recommended producer id and version. |
+| `actor_refs` | Recommended user, agent, model, peer, or service actors. |
+| `runtime_refs` | Recommended session, thread, turn, task, queue, or execution refs. |
+| `surface_refs` | Recommended refs to `context_surface` records. |
+| `item_refs` | Recommended refs to selected or injected context items. |
+| `selection_refs` | Recommended refs to selection records. |
+| `budget_ref` | Recommended ref to the budget/window decision. |
+| `assembly_refs` | Recommended refs to target-specific assemblies. |
+| `injection_refs` | Recommended refs to target-specific injections. |
+| `compaction_refs` | Recommended when summary or compaction affects this context. |
+| `missing_context_refs` | Recommended when context gaps are known. |
+| `policy_refs` | Recommended when permissions, redaction, retention, or export rules apply. |
+| `evidence_refs` | Recommended when the context is reviewed, replayed, exported, or audited. |
+| `telemetry_refs` | Recommended trace/span/log/metric correlation refs. |
+
+## Lifecycle
+
+Context records SHOULD use these lifecycle states:
+
+| State | Meaning |
+| --- | --- |
+| `draft` | Being assembled or not yet final. |
+| `available` | Candidate context exists but has not necessarily been selected. |
+| `selected` | Chosen for a scope before final budget or assembly. |
+| `assembled` | Ordered into a target-specific structure. |
+| `injected` | Made visible to a model, tool, UI, runtime, user, reviewer, or peer agent. |
+| `compacted` | Replaced by summary or digest. |
+| `redacted` | Sensitive portions removed or masked. |
+| `expired` | No longer valid because freshness, retention, or source state changed. |
+| `archived` | Kept only for historical or audit use. |
+
+## Context items
+
+A `context_item` SHOULD include `item_id`, `context_kind`, `title`, `content_mode`, `content`, `content_ref`, `mime_type`, `language`, `source_refs`, `token_estimate`, `byte_size`, `freshness`, `trust_level`, `sensitivity`, `redaction_state`, `visibility`, `priority`, `created_at`, and `metadata`.
+
+`content_mode` SHOULD be one of:
+
+- `inline`
+- `ref`
+- `summary`
+- `embedded_resource`
+- `resource_link`
+- `artifact_ref`
+- `tool_result_ref`
+- `opaque`
+
+Large, mutable, private, or binary content SHOULD be referenced rather than embedded.
+
+## Source refs
+
+A `context_source_ref` SHOULD preserve source identity with `source_id`, `uri`, `source_kind`, `selector`, `digest`, `authority`, `provenance_refs`, `external_mappings`, `license`, `retrieved_at`, `modified_at`, and `metadata`.
+
+Selectors MAY use text quote, text position, byte range, line range, JSON Pointer, CSS selector, XPath, page region, media time range, or custom selector types. Implementations SHOULD keep selectors stable enough for evidence review and replay.
+
+## Selection and ranking
+
+A `context_selection` SHOULD include `selection_id`, `surface_id`, `query`, `intent`, `candidate_item_refs`, `selected_item_refs`, `omitted_item_refs`, `ranking_signals`, `selection_policy`, `budget_ref`, `rationale`, `actor_ref`, `model_ref`, `created_at`, and `metadata`.
+
+Omitted context is first-class. If an item was available but not selected, the selection record SHOULD say whether it was omitted because of budget, low relevance, stale source, policy block, duplicate coverage, unsupported media, privacy risk, or missing permission.
+
+## Budget and window
+
+A `context_budget` SHOULD include `budget_id`, `target`, `max_tokens`, `reserved_tokens`, `max_bytes`, `max_items`, `actual_tokens`, `actual_bytes`, `actual_items`, `overflow_strategy`, `truncation_records`, `window_segments`, and `created_at`.
+
+Initial `overflow_strategy` values:
+
+- `reject`
+- `truncate_tail`
+- `truncate_middle`
+- `summarize_oldest`
+- `summarize_low_priority`
+- `defer_to_retrieval`
+- `ask_for_choice`
+- `policy_block`
+- `custom`
+
+## Assembly and injection
+
+A `context_assembly` SHOULD include `assembly_id`, `target`, `ordered_blocks`, `wrapping_policy`, `separator_policy`, `visibility`, `budget_ref`, `source_item_refs`, `redaction_state`, and `created_at`.
+
+A `context_injection` SHOULD include `injection_id`, `assembly_id`, `target`, `injection_point`, `native_id`, `visibility`, `final_ref`, `hash`, `created_at`, and `metadata`.
+
+Initial `injection_point` values:
+
+- `system_prompt`
+- `developer_prompt`
+- `message_history`
+- `user_message_appendix`
+- `tool_argument`
+- `tool_visible_resource`
+- `runtime_metadata`
+- `ui_panel`
+- `review_export`
+- `peer_agent_message`
+- `artifact_input`
+- `custom`
+
+## Compaction and summaries
+
+A `context_compaction` SHOULD include `compaction_id`, `scope`, `source_item_refs`, `summary_ref`, `method`, `trigger`, `coverage`, `loss_notes`, `validation`, `replacement_policy`, `created_at`, and `metadata`.
+
+Initial `method` values:
+
+- `extractive_summary`
+- `abstractive_summary`
+- `structured_digest`
+- `rolling_summary`
+- `semantic_memory_update`
+- `human_curated_summary`
+- `provider_context_editing`
+- `custom`
+
+Compaction SHOULD never silently erase source context. It should record what was replaced, why, how to refresh it, and what uncertainty or losses were introduced.
+
+## Missing context
+
+A `missing_context` record SHOULD include `missing_id`, `scope`, `question`, `needed_for`, `severity`, `candidate_sources`, `blocked_actions`, `requested_from`, `status`, `resolution_refs`, `created_at`, and `metadata`.
+
+Initial `severity` values:
+
+- `info`
+- `low`
+- `medium`
+- `high`
+- `blocking`
+
+A compatible UI, runtime, or peer-agent bridge MAY turn `missing_context` into a user question, retrieval request, tool invocation, policy request, or peer-agent task.
+
+## Policy and redaction
+
+Agent Context records policy facts; it does not make policy decisions. Context records SHOULD link to policy decisions through `policy_refs` and record `sensitivity`, `retention_hint`, `redaction_state`, `redaction_method`, and `redacted_by` where relevant.
+
+Initial `redaction_state` values:
+
+- `none`
+- `masked`
+- `removed`
+- `summarized`
+- `encrypted_ref`
+- `policy_blocked`
+- `unknown`
+
+## External mappings
+
+Agent Context SHOULD preserve native ids instead of replacing them.
+
+| Native source | Mapping fields |
+| --- | --- |
+| MCP | `server_id`, `mcp_session_id`, `resource_uri`, `resource_template`, `prompt_name`, `root_uri`, `jsonrpc_request_id`. |
+| A2A | `agent_card_url`, `task_id`, `context_id`, `message_id`, `part_id`, `artifact_id`, `skill_id`. |
+| OpenTelemetry | `trace_id`, `span_id`, `event_name`, `conversation_id`, `system`, `operation_name`, `token_usage`. |
+| Model API | `response_id`, `message_id`, `prompt_cache_key`, `tool_call_id`, `input_tokens`, `cached_input_tokens`. |
+| Web Annotation | `target`, `selector_type`, `start`, `end`, `exact`, `prefix`, `suffix`. |
+| W3C PROV | `entity`, `activity`, `agent`, `wasDerivedFrom`, `wasAttributedTo`, `wasGeneratedBy`. |
+| CloudEvents | `id`, `source`, `type`, `subject`, `time`, `datacontenttype`. |
+| JSON Schema | `$id`, `$schema`, `$ref`, `type`, `properties`, `required`, `additionalProperties`. |
+
+## Event classes
+
+Compatible implementations SHOULD emit or export these event classes:
+
+- `context.surface.created`
+- `context.surface.updated`
+- `context.item.added`
+- `context.item.updated`
+- `context.item.removed`
+- `context.selection.started`
+- `context.selection.completed`
+- `context.budget.applied`
+- `context.assembly.created`
+- `context.injection.applied`
+- `context.compaction.started`
+- `context.compaction.completed`
+- `context.summary.created`
+- `context.missing.detected`
+- `context.missing.requested`
+- `context.missing.resolved`
+- `context.redaction.applied`
+- `context.exported`
+
+## Compatibility requirements
+
+A compatible Agent Context implementation SHOULD:
+
+1. Export context envelopes for important turns, tasks, tool calls, and handoffs.
+2. Preserve native source ids and protocol ids.
+3. Record both selected and omitted context where selection is non-trivial.
+4. Record token or size budgets whenever context is constrained.
+5. Record assembly and injection targets separately.
+6. Record compaction sources and summary replacement facts.
+7. Record missing context when the agent knows an input gap affects quality or safety.
+8. Link policy, evidence, artifact, tool, runtime, UI, knowledge, and telemetry facts by refs rather than embedding entire foreign objects.
+
+
+---
+
+Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.0/changelog
+
+---
+title: v0.1.0 changelog
+description: Changelog for Agent Context v0.1.0.
+---
+
+# v0.1.0 Changelog
+
+## Added
+
+- Initial Agent Context draft specification.
+- Core object model for context envelopes, surfaces, items, source refs, selection, budgets, assembly, injection, compaction, summaries, missing context, and events.
+- Public JSON Schemas under `/schemas/`.
+- English and Simplified Chinese documentation.
+- LLM entrypoints and versioned documentation snapshots.

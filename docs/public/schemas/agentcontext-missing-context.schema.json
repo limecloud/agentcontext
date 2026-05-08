@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://limecloud.github.io/agentcontext/schemas/agentcontext-missing-context.schema.json",
+  "title": "Agent Missing Context",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "missing_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "question": {
+      "type": "string"
+    },
+    "needed_for": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "candidate_sources": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "blocked_actions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requested_from": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "status": {
+      "type": "string"
+    },
+    "resolution_refs": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "object"
+        ]
+      }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "missing_id",
+    "scope",
+    "question",
+    "severity",
+    "status",
+    "created_at"
+  ]
+}

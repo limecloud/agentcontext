@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://limecloud.github.io/agentcontext/schemas/agentcontext-compaction.schema.json",
+  "title": "Agent Context Compaction",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "compaction_id": {
+      "type": "string"
+    },
+    "scope": {
+      "type": "string"
+    },
+    "source_item_refs": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "object"
+        ]
+      }
+    },
+    "summary_ref": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "method": {
+      "type": "string"
+    },
+    "trigger": {
+      "type": "string"
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "loss_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "validation": {
+      "type": [
+        "object",
+        "string"
+      ]
+    },
+    "replacement_policy": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "compaction_id",
+    "scope",
+    "source_item_refs",
+    "method",
+    "created_at"
+  ]
+}

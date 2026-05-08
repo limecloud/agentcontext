@@ -1,0 +1,77 @@
+# Agent Context
+
+> Agent Context is a portable standard for context surfaces, context items, source refs, selection and ranking, budgets and windows, assembly and injection, compaction and summaries, missing-context records, policy refs, evidence refs, telemetry refs, and context lifecycle events.
+
+Use this file as the concise navigation index for LLMs. Use `llms-full.txt` when a single prompt needs the current core documentation in one markdown file.
+
+## Full context
+
+- [llms-full.txt](https://limecloud.github.io/agentcontext/llms-full.txt): Concatenated current English documentation with source URLs.
+
+## Primary docs
+
+- [What is Agent Context?](https://limecloud.github.io/agentcontext/en/what-is-agent-context): Overview and boundaries.
+- [Specification](https://limecloud.github.io/agentcontext/en/specification): Latest normative draft.
+- [Context model](https://limecloud.github.io/agentcontext/en/concepts/context-model): Object model and lifecycle.
+
+## Core contracts
+
+- [Context envelope](https://limecloud.github.io/agentcontext/en/contracts/context-envelope)
+- [Context surface](https://limecloud.github.io/agentcontext/en/contracts/context-surface)
+- [Context items](https://limecloud.github.io/agentcontext/en/contracts/context-items)
+- [Source refs](https://limecloud.github.io/agentcontext/en/contracts/source-refs)
+- [Selection and ranking](https://limecloud.github.io/agentcontext/en/contracts/selection-and-ranking)
+- [Budget and window](https://limecloud.github.io/agentcontext/en/contracts/budget-and-window)
+- [Assembly and injection](https://limecloud.github.io/agentcontext/en/contracts/assembly-and-injection)
+- [Compaction and summaries](https://limecloud.github.io/agentcontext/en/contracts/compaction-and-summaries)
+- [Missing context](https://limecloud.github.io/agentcontext/en/contracts/missing-context)
+- [Policy and redaction](https://limecloud.github.io/agentcontext/en/contracts/policy-and-redaction)
+- [Interoperability](https://limecloud.github.io/agentcontext/en/contracts/interoperability)
+
+## Examples
+
+- [Turn context snapshot](https://limecloud.github.io/agentcontext/en/examples/turn-context-snapshot)
+- [Memory prefetch](https://limecloud.github.io/agentcontext/en/examples/memory-prefetch)
+- [Knowledge selection](https://limecloud.github.io/agentcontext/en/examples/knowledge-selection)
+- [Context compaction](https://limecloud.github.io/agentcontext/en/examples/context-compaction)
+- [Missing context request](https://limecloud.github.io/agentcontext/en/examples/missing-context-request)
+
+## Reference
+
+- [Agent standards ecosystem](https://limecloud.github.io/agentcontext/en/reference/agent-ecosystem): Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, Agent Tool, and Agent Context.
+- [JSON Schemas](https://limecloud.github.io/agentcontext/en/reference/json-schemas)
+- [Research sources](https://limecloud.github.io/agentcontext/en/reference/research-sources)
+- [Source analysis](https://limecloud.github.io/agentcontext/en/reference/source-analysis)
+
+## Related standards
+
+- [Agent Knowledge](https://limecloud.github.io/agentknowledge/) - source-grounded knowledge packs.
+- [Agent UI](https://limecloud.github.io/agentui/) - interaction surfaces for agent products.
+- [Agent Runtime](https://limecloud.github.io/agentruntime/) - execution facts, controls, tasks, tools, and recovery.
+- [Agent Evidence](https://limecloud.github.io/agentevidence/) - evidence, provenance, verification, review, replay, and export.
+- [Agent Policy](https://limecloud.github.io/agentpolicy/) - policy decisions, approvals, permissions, risk, retention, waivers, and traces.
+- [Agent Artifact](https://limecloud.github.io/agentartifact/) - durable deliverables, versions, parts, previews, exports, and handoff packages.
+- [Agent Tool](https://limecloud.github.io/agenttool/) - tool declarations, surfaces, invocations, progress, results, permissions, and audit refs.
+- [Agent Context](https://limecloud.github.io/agentcontext/) - context surfaces, items, source refs, selection, budgets, assembly, injection, compaction, and missing-context facts.
+
+## Versions
+
+- [v0.1.0 overview](https://limecloud.github.io/agentcontext/en/versions/v0.1.0/overview): Latest released version overview.
+- [v0.1.0 specification snapshot](https://limecloud.github.io/agentcontext/en/versions/v0.1.0/specification): Latest released specification snapshot.
+
+## Schemas
+
+- [Context envelope schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-context-envelope.schema.json)
+- [Context surface schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-context-surface.schema.json)
+- [Context item schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-context-item.schema.json)
+- [Source ref schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-source-ref.schema.json)
+- [Selection schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-selection.schema.json)
+- [Budget schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-budget.schema.json)
+- [Assembly schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-assembly.schema.json)
+- [Compaction schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-compaction.schema.json)
+- [Missing context schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-missing-context.schema.json)
+- [Event schema](https://limecloud.github.io/agentcontext/schemas/agentcontext-event.schema.json)
+
+## Language mirrors
+
+- Chinese documentation is available under `/zh/` with matching page structure where translated pages exist.

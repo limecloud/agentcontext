@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://limecloud.github.io/agentcontext/schemas/agentcontext-context-item.schema.json",
+  "title": "Agent Context Item",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "item_id": {
+      "type": "string"
+    },
+    "context_kind": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content_mode": {
+      "type": "string"
+    },
+    "content": {},
+    "content_ref": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "mime_type": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string"
+    },
+    "source_refs": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "object"
+        ]
+      }
+    },
+    "token_estimate": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "byte_size": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "freshness": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "trust_level": {
+      "type": "string"
+    },
+    "sensitivity": {
+      "type": "string"
+    },
+    "redaction_state": {
+      "type": "string"
+    },
+    "visibility": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "priority": {
+      "type": "number"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "item_id",
+    "context_kind",
+    "content_mode",
+    "visibility"
+  ]
+}

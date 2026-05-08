@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Agent Context logo</title>
+  <desc id="desc">Layered context windows connected by source references.</desc>
+  <defs>
+    <linearGradient id="g" x1="18" y1="16" x2="112" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f766e"/>
+      <stop offset="0.52" stop-color="#2563eb"/>
+      <stop offset="1" stop-color="#f97316"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="112" height="112" rx="28" fill="#f8fafc"/>
+  <path d="M31 35h66a8 8 0 0 1 8 8v10H23V43a8 8 0 0 1 8-8Z" fill="url(#g)"/>
+  <path d="M23 56h82v29a8 8 0 0 1-8 8H31a8 8 0 0 1-8-8V56Z" fill="#e0f2fe"/>
+  <path d="M37 72h32M37 82h20M76 72h15" stroke="#0f172a" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="87" cy="82" r="13" fill="#f97316"/>
+  <path d="M87 74v16M79 82h16" stroke="#fff7ed" stroke-width="4" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://limecloud.github.io/agentcontext/schemas/agentcontext-assembly.schema.json",
+  "title": "Agent Context Assembly",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "assembly_id": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string"
+    },
+    "ordered_blocks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "wrapping_policy": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "separator_policy": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "visibility": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "budget_ref": {
+      "type": [
+        "string",
+        "object"
+      ]
+    },
+    "source_item_refs": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "object"
+        ]
+      }
+    },
+    "redaction_state": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "assembly_id",
+    "target",
+    "ordered_blocks",
+    "created_at"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "agentcontext-standard",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Draft documentation for the Agent Context standard.",
+  "homepage": "https://limecloud.github.io/agentcontext/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/limecloud/agentcontext.git"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "agent",
+    "context",
+    "memory",
+    "compaction",
+    "llm",
+    "standard",
+    "mcp"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "llm.txt",
+    "llm-full.txt",
+    "llms.txt",
+    "llms-full.txt",
+    "docs/public/llm.txt",
+    "docs/public/llm-full.txt",
+    "docs/public/llms.txt",
+    "docs/public/llms-full.txt",
+    "docs/public/schemas/",
+    "docs/en/",
+    "docs/zh/",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "dev": "vitepress dev docs",
+    "build": "vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4"
+  }
+}

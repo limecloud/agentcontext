@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://limecloud.github.io/agentcontext/schemas/agentcontext-source-ref.schema.json",
+  "title": "Agent Context Source Ref",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "uri": {
+      "type": "string"
+    },
+    "source_kind": {
+      "type": "string"
+    },
+    "selector": {
+      "type": [
+        "object",
+        "array",
+        "string"
+      ]
+    },
+    "digest": {
+      "type": "string"
+    },
+    "authority": {
+      "type": "string"
+    },
+    "provenance_refs": {
+      "type": "array",
+      "items": {
+        "type": [
+          "string",
+          "object"
+        ]
+      }
+    },
+    "external_mappings": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "license": {
+      "type": "string"
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "modified_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "required": [
+    "schema_version",
+    "source_id",
+    "uri",
+    "source_kind"
+  ]
+}
