@@ -27,6 +27,39 @@
     "context_id": {
       "type": "string"
     },
+    "runtime_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "thread_id": {
+      "type": "string"
+    },
+    "turn_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string"
+    },
+    "attempt_id": {
+      "type": "string"
+    },
+    "step_id": {
+      "type": "string"
+    },
+    "tool_call_id": {
+      "type": "string"
+    },
+    "action_id": {
+      "type": "string"
+    },
+    "evidence_id": {
+      "type": "string"
+    },
     "data": {
       "type": "object",
       "additionalProperties": true

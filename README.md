@@ -13,6 +13,7 @@ It interoperates with MCP, Agent2Agent, OpenTelemetry, W3C PROV, W3C Web Annotat
 - Assembly and injection records that explain what actually became visible to a model, tool, UI, runtime, or peer agent.
 - Compaction, summaries, omissions, missing-context requests, redaction, and lifecycle events.
 - Public JSON Schemas and LLM-friendly `llms.txt` / `llms-full.txt` entrypoints.
+- Runtime profile test cases that verify context envelopes, selection, assembly, compaction, missing-context records, and refs can be consumed by Agent Runtime without becoming runtime state.
 
 ## Documentation
 
@@ -26,6 +27,7 @@ It interoperates with MCP, Agent2Agent, OpenTelemetry, W3C PROV, W3C Web Annotat
 - [Assembly and injection](docs/en/contracts/assembly-and-injection.md)
 - [Compaction and summaries](docs/en/contracts/compaction-and-summaries.md)
 - [Missing context](docs/en/contracts/missing-context.md)
+- [Runtime profile test cases](docs/en/authoring/runtime-profile-test-cases.md)
 - [JSON Schemas](docs/en/reference/json-schemas.md)
 - [Research sources](docs/en/reference/research-sources.md)
 - [中文规范](docs/zh/specification.md)

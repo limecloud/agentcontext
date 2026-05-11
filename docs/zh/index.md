@@ -25,3 +25,10 @@ features:
 Agent Context 是 Agent 系统上下文层的可移植标准。它定义可用上下文如何被暴露、选择、预算、组装、注入、压缩、摘要、遗漏、请求、脱敏，并与证据关联；它不替代 runtime scheduler、memory store、retrieval system、UI renderer、tool protocol、policy engine、artifact store 或 knowledge package。
 
 当一个产品需要回答“Agent 当时知道什么、来自哪里、为什么选了这一段、哪些没放进去、哪些被压缩、哪些被注入模型或工具、还缺什么上下文”时，就应该使用 Agent Context。
+
+## 从这里开始
+
+- [最新规范](specification)
+- [Context 模型](concepts/context-model)
+- [Runtime Profile 测试用例](authoring/runtime-profile-test-cases)
+- [JSON Schemas](reference/json-schemas)

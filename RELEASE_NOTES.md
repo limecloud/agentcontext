@@ -1,15 +1,15 @@
-# Agent Context v0.1.0
+# Agent Context v0.1.1
 
-Agent Context v0.1.0 is the first public draft of a portable context standard for agent systems.
+Agent Context v0.1.1 is a runtime-profile alignment release. It adds conformance-style test cases and correlation fields so Agent Runtime implementations can consume context facts without turning Agent Context into the runtime owner.
 
-## Added
+## Highlights
 
-- Defines context envelopes, surfaces, items, source refs, selection and ranking, budgets and windows, assembly and injection, compaction and summaries, missing-context records, policy/redaction refs, interoperability mappings, and lifecycle events.
-- Adds public JSON Schemas for the core records.
-- Adds English and Simplified Chinese documentation with versioned snapshots.
-- Adds examples for turn context snapshots, memory prefetch, knowledge selection, context compaction, and missing-context requests.
-- Adds LLM-friendly entrypoints: `llms.txt`, `llms-full.txt`, `llm.txt`, and `llm-full.txt`.
+- Adds English and Simplified Chinese runtime profile test cases for context envelopes, selection, budget, assembly, missing-context, compaction, redaction, and evidence refs.
+- Aligns interoperability guidance with Agent Runtime `RuntimeEvent`, `ThreadReadModel`, `TaskSnapshot`, and `EvidencePack` sources.
+- Extends the event schema with optional runtime correlation fields.
+- Refreshes package metadata, navigation, version snapshots, README, and LLM entrypoints to v0.1.1.
 
-## Compatibility
+## Links
 
-This is an initial draft. Implementations should preserve native ids from MCP, A2A, model APIs, telemetry, provenance, annotation, runtime, UI, policy, evidence, artifact, tool, knowledge, and skill systems.
+- Documentation: https://limecloud.github.io/agentcontext/
+- LLM context: https://limecloud.github.io/agentcontext/llms-full.txt

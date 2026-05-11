@@ -25,3 +25,10 @@ features:
 Agent Context is a portable standard for the context layer in agent systems. It defines how available context is surfaced, selected, budgeted, assembled, injected, compacted, summarized, omitted, requested, redacted, and linked to evidence without replacing runtime schedulers, memory stores, retrieval systems, UI renderers, tool protocols, policy engines, artifact stores, or knowledge packages.
 
 Use Agent Context when a product needs to answer: what did the agent know, where did it come from, why was this slice selected, what was left out, what was compacted, what was injected into a model or tool, and what context is still missing?
+
+## Start here
+
+- [Latest specification](specification)
+- [Context model](concepts/context-model)
+- [Runtime profile test cases](authoring/runtime-profile-test-cases)
+- [JSON Schemas](reference/json-schemas)

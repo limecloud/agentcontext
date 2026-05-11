@@ -1,16 +1,18 @@
 # Agent Context full documentation for LLMs
 
-This file concatenates the current English Agent Context documentation. Source URLs point to the public documentation site.
+Source root: https://limecloud.github.io/agentcontext
+
+Agent Context is a portable draft standard for the context layer in agent systems: context surfaces, context items, source refs, selection and ranking, budget and window constraints, assembly and injection, compaction and summaries, missing-context records, policy refs, evidence refs, and telemetry refs.
+
+This file concatenates the current English documentation most useful for model context. Each section includes its source URL. Version snapshots and translated pages are linked from `llms.txt`; the latest release snapshot is included at the end.
 
 
----
+# What Is Agent Context
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/what-is-agent-context
 
----
-title: What is Agent Context?
-description: Overview and boundaries for Agent Context.
----
 
 # What is Agent Context?
 
@@ -56,14 +58,12 @@ Agent Context makes those facts explicit.
 8. Support different visibility targets: model, tool, runtime, UI, user, reviewer, and peer agent.
 
 
----
+# Specification
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/specification
 
----
-title: Specification
-description: Latest Agent Context draft specification.
----
 
 # Specification
 
@@ -85,6 +85,7 @@ Agent Context standardizes these implementation concerns:
 8. Compaction and summary records that preserve source coverage, replacement facts, loss notes, and refresh policy.
 9. Missing-context records that make known unknowns actionable.
 10. Event classes for surface, item, selection, budget, assembly, injection, compaction, missing-context, redaction, and export changes.
+11. Runtime profile linkage tests that prove context facts can be referenced by Agent Runtime without becoming runtime status, task state, tool success, or approval state.
 
 Agent Context does **not** define a new retrieval engine, vector database, memory store, prompt language, runtime scheduler, UI component library, authorization engine, evidence archive, or artifact format.
 
@@ -311,14 +312,12 @@ A compatible Agent Context implementation SHOULD:
 8. Link policy, evidence, artifact, tool, runtime, UI, knowledge, and telemetry facts by refs rather than embedding entire foreign objects.
 
 
----
+# Context Model
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/concepts/context-model
 
----
-title: Context model
-description: Object model and lifecycle for Agent Context.
----
 
 # Context Model
 
@@ -392,14 +391,12 @@ Context may be visible to one or more targets:
 A compatible implementation should not assume that context injected into one target is visible to every target.
 
 
----
+# Context Envelope
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/context-envelope
 
----
-title: Context envelope
-description: Agent Context context envelope contract.
----
 
 # Context envelope
 
@@ -424,14 +421,12 @@ Use refs rather than embedding complete records when envelopes travel across sys
 The envelope is a snapshot, not a mutable memory store. If context changes, create a new event and, when needed, a new envelope revision.
 
 
----
+# Context Surface
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/context-surface
 
----
-title: Context surface
-description: Agent Context context surface contract.
----
 
 # Context surface
 
@@ -456,14 +451,12 @@ A surface SHOULD include `surface_id`, `scope`, `producer`, `available_source_re
 Do not expose the whole world as a surface. Large catalogs should be represented through discovery, search, retrieval, or deferred source refs.
 
 
----
+# Context Items
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/context-items
 
----
-title: Context items
-description: Agent Context context items contract.
----
 
 # Context items
 
@@ -487,14 +480,12 @@ Add `title`, `mime_type`, `language`, `source_refs`, `token_estimate`, `byte_siz
 An item is context, not authority by itself. Authority comes from its source refs, provenance, freshness, and policy/evidence links.
 
 
----
+# Source Refs
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/source-refs
 
----
-title: Source refs
-description: Agent Context source refs contract.
----
 
 # Source refs
 
@@ -513,14 +504,12 @@ Use `source_id`, `uri`, `source_kind`, `selector`, `digest`, `authority`, `prove
 A source ref should remain useful after context is summarized, redacted, exported, or reviewed. If the original source cannot be shared, preserve a digest and a redacted locator.
 
 
----
+# Selection And Ranking
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/selection-and-ranking
 
----
-title: Selection and ranking
-description: Agent Context selection and ranking contract.
----
 
 # Selection and ranking
 
@@ -539,14 +528,12 @@ Initial omission reasons: `budget_limit`, `low_relevance`, `duplicate`, `stale`,
 If an omitted item would reasonably change the answer, the selection should either record a high-impact omission or create a `missing_context` record.
 
 
----
+# Budget And Window
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/budget-and-window
 
----
-title: Budget and window
-description: Agent Context budget and window contract.
----
 
 # Budget and window
 
@@ -565,14 +552,12 @@ A window segment SHOULD include `segment_id`, `role`, `target`, `reserved_tokens
 Budget decisions should be reproducible. Record both the limit and the measured usage estimate available at the time.
 
 
----
+# Assembly And Injection
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/assembly-and-injection
 
----
-title: Assembly and injection
-description: Agent Context assembly and injection contract.
----
 
 # Assembly and injection
 
@@ -591,14 +576,12 @@ Targets include model prompts, message history, tool arguments, tool-visible res
 Never infer injection from selection alone. A selected item may be omitted later, compacted, redacted, deferred, or visible only to a non-model target.
 
 
----
+# Compaction And Summaries
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/compaction-and-summaries
 
----
-title: Compaction and summaries
-description: Agent Context compaction and summaries contract.
----
 
 # Compaction and summaries
 
@@ -617,14 +600,12 @@ Initial triggers: `manual`, `token_pressure`, `session_length`, `task_boundary`,
 A compaction is safe only if reviewers can tell what it replaced, what it preserved, what it lost, and when it should be refreshed.
 
 
----
+# Missing Context
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/missing-context
 
----
-title: Missing context
-description: Agent Context missing context contract.
----
 
 # Missing context
 
@@ -647,14 +628,12 @@ Initial status values: `open`, `requested`, `waiting`, `resolved`, `declined`, `
 Do not hide uncertainty inside a final answer. If missing context materially affects work, record it and surface it to the system that can resolve it.
 
 
----
+# Policy And Redaction
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/policy-and-redaction
 
----
-title: Policy and redaction
-description: Agent Context policy and redaction contract.
----
 
 # Policy and redaction
 
@@ -673,18 +652,31 @@ A redaction record SHOULD include `redaction_state`, `redaction_method`, `redact
 Do not treat redacted context as the same context. Preserve a relationship to the original by ref when policy allows; otherwise preserve a digest and redaction reason.
 
 
----
+# Interoperability
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/contracts/interoperability
 
----
-title: Interoperability
-description: Agent Context interoperability contract.
----
 
 # Interoperability
 
 Agent Context is a bridge standard. It should preserve native ids and map to adjacent standards by refs.
+
+## Agent Runtime
+
+When Agent Context is used by Agent Runtime-compatible systems, context records should be referenced from `RuntimeEvent`, `ThreadReadModel`, `TaskSnapshot`, and `EvidencePack` rather than copied into runtime status.
+
+| Agent Context fact | Runtime relationship |
+| --- | --- |
+| Context envelope | Snapshot of context available to `session_id/thread_id/turn_id`. |
+| Selection and budget records | Explain why context was selected, omitted, truncated, or deferred. |
+| Assembly and injection records | Explain what actually became visible to a model, tool, UI, runtime, or peer agent. |
+| Missing-context records | Produce explicit missing facts or follow-up actions without becoming approval state. |
+| Compaction summaries | Preserve context boundaries and source refs without becoming final answer text. |
+| Policy/evidence refs | Let Agent Policy and Agent Evidence join context to decisions and packs. |
+
+Agent Context MUST NOT declare turn completion, tool success, task status, or permission grants. Those are runtime, tool, task, and policy facts.
 
 ## MCP
 
@@ -707,14 +699,12 @@ Use PROV-style entity/activity/agent relationships for derivation and attributio
 Interoperability means preserving foreign identity. Do not collapse native protocols into Agent Context-only ids.
 
 
----
+# Quickstart
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/authoring/quickstart
 
----
-title: Implementation quickstart
-description: Quickstart for implementing Agent Context.
----
 
 # Implementation Quickstart
 
@@ -730,14 +720,12 @@ description: Quickstart for implementing Agent Context.
 10. Export `context_event` records so reviewers can replay how context changed.
 
 
----
+# Acceptance Scenarios
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/authoring/acceptance-scenarios
 
----
-title: Acceptance scenarios
-description: Minimal scenarios for validating an Agent Context implementation.
----
 
 # Acceptance Scenarios
 
@@ -765,15 +753,90 @@ Given a task blocked by a missing file, the implementation creates a `missing_co
 
 Given a selected item with private content, the implementation records redaction state, redaction method, policy refs, and a redacted assembly block.
 
+## Agent Runtime profile linkage
 
----
+Given a runtime turn uses selected context, the context envelope preserves `session_id`, `thread_id`, `turn_id`, and applicable task/run ids. Runtime references the context by id, while context does not declare runtime completion, approval, or tool success. See [Runtime profile test cases](./runtime-profile-test-cases).
+
+
+# Runtime Profile Test Cases
+
+
+
+Source: https://limecloud.github.io/agentcontext/en/authoring/runtime-profile-test-cases
+
+
+# Runtime profile test cases
+
+Use these cases when Agent Context is used by Agent Runtime, Lime AgentRuntime Profile, or an equivalent runtime spine. The goal is to prove that context facts can be referenced by runtime turns without turning Agent Context into a runtime state owner.
+
+## Canonical boundary
+
+```text
+ContextSurface / ContextItem / SourceRef / Selection / Assembly / Compaction / MissingContext
+  -> context refs on RuntimeEvent, ThreadReadModel, TaskSnapshot, or EvidencePack
+  -> Agent UI and Agent Evidence consume refs and summaries
+```
+
+Agent Context owns what context was available, selected, assembled, injected, omitted, compacted, redacted, or missing. Agent Runtime owns turn status, task status, retries, tool execution, action waits, and recovery.
+
+## Runtime correlation fields
+
+Compatible context events and envelopes SHOULD preserve these ids when available:
+
+| Field | Purpose |
+| --- | --- |
+| `runtime_id` | Runtime installation or runtime instance. |
+| `session_id` | Durable work container that requested context. |
+| `thread_id` | Ordered execution context. |
+| `turn_id` | Turn whose context was selected or injected. |
+| `task_id` / `run_id` / `attempt_id` | Managed task attempt using the context. |
+| `step_id` / `tool_call_id` | Runtime step or tool call that consumed context. |
+| `action_id` | Human/policy action that requested more context. |
+| `evidence_id` | Evidence pack or source map that references the context. |
+
+## Test cases
+
+| ID | Case | Input facts | Expected result |
+| --- | --- | --- | --- |
+| ACTX-AR-ID-001 | Turn context snapshot keeps ids | Context envelope for a submitted turn | Envelope preserves `session_id/thread_id/turn_id`; runtime can reference `context_id`. |
+| ACTX-AR-ID-002 | Task context keeps attempt ids | Selection for task retry | Selection records preserve `task_id/run_id/attempt_id`; old attempt context is not overwritten. |
+| ACTX-AR-SEL-001 | Selected vs omitted are explicit | Candidate context set exceeds budget | Selection records include selected and omitted items with reasons. |
+| ACTX-AR-BUDGET-001 | Budget/window decision is traceable | Context window is constrained | Budget record explains truncation; runtime does not guess from prompt text. |
+| ACTX-AR-ASM-001 | Injection is auditable | Model request uses assembled context | Assembly/injection record points to source refs and context item ids. |
+| ACTX-AR-MISSING-001 | Missing context becomes requestable fact | Runtime cannot access needed file/source | Missing-context record includes owner, requested action, and safe user-facing summary. |
+| ACTX-AR-COMPACT-001 | Compaction preserves boundary | Old thread is compacted | Summary references source window and does not replay old reasoning as final answer. |
+| ACTX-AR-POLICY-001 | Redaction is a context fact with policy refs | Sensitive item is redacted | Context item preserves redaction reason and `policy_refs`; raw secret is not injected. |
+| ACTX-AR-EVID-001 | Evidence can cite context refs | Evidence pack exports source map | Evidence refs point to context/source refs instead of copying all context payloads. |
+| ACTX-AR-GOV-001 | Context does not own runtime status | Context event contains runtime ids | No context record declares turn completed, failed, approved, or tool succeeded. |
+
+## Failure cases
+
+These are incompatible with the boundary:
+
+1. A context record declares task completion or tool success.
+2. A missing-context record is converted into a permission approval without Agent Policy or runtime confirmation.
+3. Compaction output is treated as final answer text.
+4. Runtime ids are dropped, making evidence unable to join context to turn or task.
+5. Redacted context is reintroduced through summaries, diagnostics, or UI projection.
+
+## Minimum validation set
+
+For Agent Runtime-compatible integration, run at least:
+
+1. ACTX-AR-ID-001 and ACTX-AR-ID-002.
+2. ACTX-AR-SEL-001, ACTX-AR-BUDGET-001, and ACTX-AR-ASM-001.
+3. ACTX-AR-MISSING-001 and ACTX-AR-COMPACT-001.
+4. ACTX-AR-POLICY-001 and ACTX-AR-EVID-001.
+
+Runtime proves the turn/task state. Agent Context proves which context facts were available and why.
+
+
+# Turn Context Snapshot
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/examples/turn-context-snapshot
 
----
-title: Turn context snapshot
-description: Agent Context example for turn context snapshot.
----
 
 # Turn context snapshot
 
@@ -797,14 +860,12 @@ description: Agent Context example for turn context snapshot.
 This envelope does not embed the whole prompt. It points to the records that explain how prompt context was selected and injected.
 
 
----
+# Memory Prefetch
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/examples/memory-prefetch
 
----
-title: Memory prefetch
-description: Agent Context example for memory prefetch.
----
 
 # Memory prefetch
 
@@ -829,14 +890,12 @@ description: Agent Context example for memory prefetch.
 Memory prefetch is a selection fact. It is not the memory store itself.
 
 
----
+# Knowledge Selection
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/examples/knowledge-selection
 
----
-title: Knowledge selection
-description: Agent Context example for knowledge selection.
----
 
 # Knowledge selection
 
@@ -864,14 +923,12 @@ description: Agent Context example for knowledge selection.
 Agent Knowledge owns the knowledge artifact. Agent Context records the selected knowledge item and source anchor for this turn.
 
 
----
+# Context Compaction
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/examples/context-compaction
 
----
-title: Context compaction
-description: Agent Context example for context compaction.
----
 
 # Context compaction
 
@@ -894,14 +951,12 @@ description: Agent Context example for context compaction.
 The compaction record makes a shortened context window auditable.
 
 
----
+# Missing Context Request
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/examples/missing-context-request
 
----
-title: Missing context request
-description: Agent Context example for missing context request.
----
 
 # Missing context request
 
@@ -926,14 +981,12 @@ description: Agent Context example for missing context request.
 Missing context can drive a UI question, retrieval action, tool request, or peer-agent handoff.
 
 
----
+# Glossary
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/reference/glossary
 
----
-title: Glossary
-description: Agent Context terminology.
----
 
 # Glossary
 
@@ -953,14 +1006,12 @@ description: Agent Context terminology.
 | Redaction | Masking, removing, summarizing, or replacing sensitive context. |
 
 
----
+# Agent Ecosystem
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/reference/agent-ecosystem
 
----
-title: Agent standards ecosystem
-description: Mutual links across Agent Knowledge, Agent UI, Agent Runtime, Agent Evidence, Agent Policy, Agent Artifact, Agent Tool, and Agent Context.
----
 
 # Agent Standards Ecosystem
 
@@ -1014,14 +1065,12 @@ No standard should become the whole stack. A compatible implementation should pr
 These candidates should remain design notes until they can be specified without relying on one product implementation.
 
 
----
+# Json Schemas
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/reference/json-schemas
 
----
-title: JSON Schemas
-description: Public JSON Schemas for Agent Context v0.1.0.
----
 
 # JSON Schemas
 
@@ -1041,14 +1090,12 @@ Agent Context v0.1.0 publishes draft JSON Schemas for implementors. The schemas 
 | Event | [/schemas/agentcontext-event.schema.json](/schemas/agentcontext-event.schema.json) |
 
 
----
+# Ecosystem Boundaries
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/reference/ecosystem-boundaries
 
----
-title: Ecosystem boundaries
-description: Boundaries between Agent Context and adjacent standards.
----
 
 # Ecosystem Boundaries
 
@@ -1081,14 +1128,12 @@ Artifact owns durable deliverables and their versions. Context may reference art
 UI owns user-visible surfaces and controls. Context gives UI explainable context records, missing-context prompts, and reviewable context traces.
 
 
----
+# Research Sources
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/reference/research-sources
 
----
-title: Research sources
-description: External references used by the Agent Context draft.
----
 
 # Research Sources
 
@@ -1108,14 +1153,12 @@ Agent Context v0.1.0 uses established context, resource, eventing, telemetry, pr
 | [Agent Skills](https://agentskills.io/) | AI-friendly authoring style, progressive disclosure, and package-versus-runtime boundary discipline. |
 
 
----
+# Source Analysis
+
+
 
 Source: https://limecloud.github.io/agentcontext/en/reference/source-analysis
 
----
-title: Source analysis
-description: Analysis distilled from agent context, memory, prompt assembly, tool, and runtime systems.
----
 
 # Source Analysis
 
@@ -1141,35 +1184,32 @@ Agent products assemble all of those into a model or tool context window under b
 8. Keep context portable even when native systems use different prompt, resource, or memory mechanics.
 
 
----
 
-Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.0/overview
+# V0.1.1 overview
 
----
-title: v0.1.0 overview
-description: Agent Context v0.1.0 release overview.
----
 
-# Agent Context v0.1.0
 
-Agent Context v0.1.0 establishes the first public draft for portable context facts in agent systems.
+Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.1/overview
+
+
+# Agent Context v0.1.1
+
+Agent Context v0.1.1 is a patch release that makes Agent Context directly testable against Agent Runtime profile facts without moving runtime ownership into the context standard.
 
 ## Highlights
 
-- Defines context envelopes, surfaces, items, source refs, selection, budgets, windows, assembly, injection, compaction, summaries, missing context, redaction, and events.
-- Publishes JSON Schemas for the core objects.
-- Adds examples for turn snapshots, memory prefetch, knowledge selection, context compaction, and missing-context requests.
-- Adds LLM-friendly entrypoints through `llms.txt`, `llms-full.txt`, `llm.txt`, and `llm-full.txt`.
+- Adds runtime profile test cases for context envelopes, selection, budgets, assemblies, missing-context records, compaction, redaction, and evidence refs.
+- Aligns interoperability guidance with Agent Runtime events, thread read models, task snapshots, and evidence packs.
+- Adds optional runtime correlation fields to the public event schema.
+- Refreshes README, navigation, LLM entrypoints, release notes, package metadata, and version snapshots for v0.1.1.
 
 
----
+# V0.1.1 specification
 
-Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.0/specification
 
----
-title: Specification
-description: Latest Agent Context draft specification.
----
+
+Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.1/specification
+
 
 # Specification
 
@@ -1191,6 +1231,7 @@ Agent Context standardizes these implementation concerns:
 8. Compaction and summary records that preserve source coverage, replacement facts, loss notes, and refresh policy.
 9. Missing-context records that make known unknowns actionable.
 10. Event classes for surface, item, selection, budget, assembly, injection, compaction, missing-context, redaction, and export changes.
+11. Runtime profile linkage tests that prove context facts can be referenced by Agent Runtime without becoming runtime status, task state, tool success, or approval state.
 
 Agent Context does **not** define a new retrieval engine, vector database, memory store, prompt language, runtime scheduler, UI component library, authorization engine, evidence archive, or artifact format.
 
@@ -1417,21 +1458,20 @@ A compatible Agent Context implementation SHOULD:
 8. Link policy, evidence, artifact, tool, runtime, UI, knowledge, and telemetry facts by refs rather than embedding entire foreign objects.
 
 
----
+# V0.1.1 changelog
 
-Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.0/changelog
 
----
-title: v0.1.0 changelog
-description: Changelog for Agent Context v0.1.0.
----
 
-# v0.1.0 Changelog
+Source: https://limecloud.github.io/agentcontext/en/versions/v0.1.1/changelog
 
-## Added
 
-- Initial Agent Context draft specification.
-- Core object model for context envelopes, surfaces, items, source refs, selection, budgets, assembly, injection, compaction, summaries, missing context, and events.
-- Public JSON Schemas under `/schemas/`.
-- English and Simplified Chinese documentation.
-- LLM entrypoints and versioned documentation snapshots.
+# v0.1.1 Changelog
+
+### Added
+
+- Adds Agent Runtime profile test cases in English and Simplified Chinese, covering context ids, selection, budget, assembly, missing-context, compaction, redaction, and evidence refs.
+
+### Changed
+
+- Aligns interoperability guidance with Agent Runtime `RuntimeEvent`, `ThreadReadModel`, `TaskSnapshot`, and `EvidencePack` references.
+- Extends the Agent Context event schema with optional runtime correlation fields such as `runtime_id`, `session_id`, `thread_id`, `turn_id`, `task_id`, `run_id`, `attempt_id`, `step_id`, `tool_call_id`, `action_id`, and `evidence_id`.

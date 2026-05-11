@@ -1,6 +1,6 @@
 ---
-title: 规范
-description: 最新 Agent Context 草案规范。
+title: v0.1.1 规范
+description: Agent Context v0.1.1 规范快照。
 ---
 
 # 规范

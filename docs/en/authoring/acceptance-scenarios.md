@@ -28,3 +28,7 @@ Given a task blocked by a missing file, the implementation creates a `missing_co
 ## Redaction
 
 Given a selected item with private content, the implementation records redaction state, redaction method, policy refs, and a redacted assembly block.
+
+## Agent Runtime profile linkage
+
+Given a runtime turn uses selected context, the context envelope preserves `session_id`, `thread_id`, `turn_id`, and applicable task/run ids. Runtime references the context by id, while context does not declare runtime completion, approval, or tool success. See [Runtime profile test cases](./runtime-profile-test-cases).

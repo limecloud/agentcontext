@@ -1,6 +1,6 @@
 ---
-title: Specification
-description: Latest Agent Context draft specification.
+title: v0.1.1 specification
+description: Agent Context v0.1.1 specification snapshot.
 ---
 
 # Specification
